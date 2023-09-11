@@ -38,12 +38,13 @@ public class TradeService {
             return false;
         }
     }
-
+//Storing the list of trades
     public List<Trade> getAllTrade() {
         return list;
     }
 
-    // Custom validation method
+    // Custom validation method for Invalid currency pair,Invalid trade amount,Invalid trade rate
+    
     private void validateTrade(Trade trade) {
         if (!trade.getCurrencyPair().equalsIgnoreCase("USDINR")) {
             throw new IllegalArgumentException("Invalid currency pair.");
