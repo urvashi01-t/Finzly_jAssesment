@@ -1,33 +1,60 @@
-package com.fxTrading.FX_Trading.Service;
+package com.springboot.FXTrading.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.fxTrading.FX_Trading.Model.Trade;
+import com.springboot.FXTrading.model.Trade;
 
 @Service
 public class TradeService {
 
-	private static int tradeCount = 0;
-	private List<Trade> list=new ArrayList<>();
+    private static int tradeCount = 0;
+    List<Trade> list = new ArrayList<>();
 
-	public boolean bookTrade(Trade trade) {
-		// Rate value is hardcoded here as 66. 
-		// Validations are done for the entered values. if validated trade is booked or else message will be displayed accordingly.
-		if(!(trade.getCurrencyPair().equalsIgnoreCase("USDINR")) || trade.getAmount()<=0 || trade.getAmount()> trade.getTradingAmountLimit() || trade.getCustomerName().isEmpty() || trade.getCurrencyPair().isEmpty() || trade.getRate()!=66)  {
-			return false;
-		}else {
-			tradeCount++;
-			trade.setTradeID(tradeCount);
-			trade.setTradeConfirmed(true);
-			list.add(trade);
-			return true;
-		}
-	
-	}
-	public List<Trade> getAllTrade(){
-		return list;
-	}
+    public boolean bookTrade(Trade trade) {
+        try {
+            // Introduce a NullPointerException by accessing a property of a null object
+            String customerName = trade.getCustomerName();
+            if (customerName.length() == 0) {
+                throw new NullPointerException("Customer name is null.");
+            }
+
+            validateTrade(trade); // Perform validations
+
+            tradeCount++;
+            trade.setTradeID(tradeCount);
+            trade.setTradeConfirmed(true);
+            list.add(trade);
+            return true;
+        } catch (NullPointerException e) {
+            // Handle NullPointerException here
+            System.err.println("NullPointerException: " + e.getMessage());
+            return false;
+        } catch (IllegalArgumentException e) {
+            // Handle validation exceptions here
+            System.err.println("IllegalArgumentException: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public List<Trade> getAllTrade() {
+        return list;
+    }
+
+    // Custom validation method
+    private void validateTrade(Trade trade) {
+        if (!trade.getCurrencyPair().equalsIgnoreCase("USDINR")) {
+            throw new IllegalArgumentException("Invalid currency pair.");
+        }
+
+        if (trade.getAmount() <= 0 || trade.getAmount() > Trade.getTradingAmountLimit()) {
+            throw new IllegalArgumentException("Invalid trade amount.");
+        }
+
+        if (trade.getRate() != 66) {
+            throw new IllegalArgumentException("Invalid trade rate.");
+        }
+    }
 }
