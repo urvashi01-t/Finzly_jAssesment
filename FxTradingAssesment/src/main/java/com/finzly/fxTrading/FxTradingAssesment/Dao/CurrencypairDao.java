@@ -1,27 +1,33 @@
-package com.finzly.fxTrading.FxTradingAssesment.Dao;
+package com.finzly.fxTrading.FxTradingAssesment.Service;
 
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
+import com.finzly.fxTrading.FxTradingAssesment.Dao.CurrencypairDao;
+import com.finzly.fxTrading.FxTradingAssesment.Exception.CurrencypairNotAvailableException;
 import com.finzly.fxTrading.FxTradingAssesment.Model.Currencypair;
 
-@Repository
-public class CurrencypairDao {
+@Service
+public class CurrencypairService {
+	  // Create a logger for this class
+	Logger logger = LoggerFactory.getLogger(CurrencypairService.class);
+
 	@Autowired
-	SessionFactory factory;
+CurrencypairDao dao;
+	// Retrieve a list of currency pairs from the database
+public List<Currencypair> getCurrencyPair() {
+	logger.info("Fetching all currency pair from data base (CurrencypairService)");
+    // Check if any currency pairs are available; if not, throw an exception
 
-	public List<Currencypair> getCurrencyPair() {
-		Session session = factory.openSession();
-		Criteria criteria = session.createCriteria(Currencypair.class);
-
-		return criteria.list();
-
+	if( dao.getCurrencyPair().isEmpty() ) {
+		throw new CurrencypairNotAvailableException("Requested Currency Pair is not available");
 	}
-
+	else
+		return  dao.getCurrencyPair();
+	
+}
 }
